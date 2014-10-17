@@ -120,15 +120,32 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         delegate = null;
     }
 
+    public void setIgnoreSharpMarkedUser() {
+        HashMap<Integer, TLRPC.User> mapUserToIgnore = new HashMap<Integer, TLRPC.User>();
+        for (TLRPC.TL_contact contact : ContactsController.getInstance().contacts) {
+            TLRPC.User user = MessagesController.getInstance().getUser(contact.user_id);
+            String name = ContactsController.formatName(user.first_name, user.last_name).toLowerCase();
+            if (name.startsWith("#")) {
+                mapUserToIgnore.put(user.id, null);
+            }
+        }
+        setIgnoreUsers(mapUserToIgnore);
+    }
+
     @Override
     public View createView(LayoutInflater inflater, ViewGroup container) {
+        //skyorbit: if the code below causes slow down, this can be postponed.
+        setIgnoreSharpMarkedUser();
+        //skyorbit: disabled for now. able to find some use cases.
+        //String sValidContactCnt = " " + (ContactsController.getInstance().contacts.size() - ignoreUsers.size()); //Don't count sharp-marked person
         if (fragmentView == null) {
             actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
             actionBarLayer.setBackOverlay(R.layout.updating_state_layout);
             if (destroyAfterSelect) {
                 actionBarLayer.setTitle(LocaleController.getString("SelectContact", R.string.SelectContact));
             } else {
-                actionBarLayer.setTitle(LocaleController.getString("Contacts", R.string.Contacts));
+                String sAllContactCnt = " " + ContactsController.getInstance().contacts.size();
+                actionBarLayer.setTitle(LocaleController.getString("Contacts", R.string.Contacts) + sAllContactCnt);
             }
 
             actionBarLayer.setActionBarMenuOnItemClick(new ActionBarLayer.ActionBarMenuOnItemClick() {

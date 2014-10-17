@@ -602,7 +602,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                         public void onClick(View view) {
                             try {
                                 Intent intent;
-                                if(LocaleController.getCurrentLanguageCode().equals("ko") && user.phone.startsWith("82")) {
+                                if(LocaleController.getCurrentLanguageName().equals("한국어") && user.phone.startsWith("82")) {
                                     String kDial = "0" + user.phone.substring(2, user.phone.length());
                                     intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + kDial));
                                 }
