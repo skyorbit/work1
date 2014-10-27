@@ -23,11 +23,15 @@ import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.util.Base64;
 
+import com.rampo.updatechecker.UpdateChecker;
+import com.rampo.updatechecker.notice.Notice;
+
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.UpdateManager;
 
 import org.telegram.ui.ApplicationLoader;
+import org.telegramS.messenger.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -709,6 +713,14 @@ public class Utilities {
     public static void checkForUpdates(Activity context) {
         if (BuildVars.DEBUG_VERSION) {
             UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH);
+        }
+        try {
+            UpdateChecker checker = new UpdateChecker(context);
+            checker.setNoticeIcon(R.drawable.ic_launcher);
+            checker.setNotice(Notice.NOTIFICATION);
+            checker.start();
+        }catch(Exception e){
+
         }
     }
 }
