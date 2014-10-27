@@ -113,6 +113,8 @@
     <string name="SaveToDownloads">다운로드 폴더에 저장</string>
     <string name="ApplyLocalizationFile">언어 파일 적용</string>
     <string name="UnsupportedAttachment">지원하지 않는 형식입니다</string>
+    <string name="AddedFavoriteNotification">즐겨찾기에 추가됨</string>
+    <string name="RemovedFavoriteNotification">즐겨찾기에서 삭제됨</string>
     <!--notification-->
     <string name="EncryptedChatRequested">비밀대화를 요청했습니다</string>
     <string name="EncryptedChatAccepted">비밀대화를 시작했습니다</string>
@@ -153,6 +155,8 @@
     <string name="NotificationMessagesPeopleDisplayOrder">%2$s %1$s</string>
     <!--contacts view-->
     <string name="SelectContact">대화상대 선택</string>
+    <string name="SelectSecretContact">대화상대 선택(보안)</string>
+    <string name="FavoriteList">즐겨찾는 친구</string>
     <string name="NoContacts">대화상대가 없습니다</string>
     <string name="InviteText">텔레그램으로 초대합니다! http://telegram.org/dl2</string>
     <string name="TodayAt">오늘</string>

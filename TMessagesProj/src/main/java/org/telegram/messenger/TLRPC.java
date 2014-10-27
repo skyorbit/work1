@@ -4499,6 +4499,7 @@ public class TLRPC {
 
         public int user_id;
         public boolean mutual;
+        public boolean is_favorite = false;
 
         public void readParams(AbsSerializedData stream) {
             user_id = stream.readInt32();
@@ -9355,6 +9356,7 @@ public class TLRPC {
         public UserProfilePhoto photo;
         public UserStatus status;
         public boolean inactive;
+        public boolean favorite = false;
     }
 
     public static class TL_userEmpty extends User {

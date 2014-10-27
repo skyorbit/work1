@@ -31,12 +31,18 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
     private boolean onlyUsers;
     private boolean usersAsSections;
     private HashMap<Integer, TLRPC.User> ignoreUsers;
+    private boolean onlyFavoriteUsers;
 
-    public ContactsActivityAdapter(Context context, boolean arg1, boolean arg2, HashMap<Integer, TLRPC.User> arg3) {
+    public ContactsActivityAdapter(Context context, boolean arg1, boolean arg2, HashMap<Integer, TLRPC.User> arg3, boolean arg4) {
         mContext = context;
         onlyUsers = arg1;
         usersAsSections = arg2;
         ignoreUsers = arg3;
+        onlyFavoriteUsers = arg4;
+    }
+
+    public int getFavoriteUsersCount() {
+        return MessagesController.getInstance().getFavoriteUsersCount();
     }
 
     @Override
@@ -51,6 +57,9 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
 
     @Override
     public int getSectionCount() {
+        if(onlyFavoriteUsers)
+            return 1;
+
         int count = 0;
         if (usersAsSections) {
             count += ContactsController.getInstance().sortedUsersSectionsArray.size();
@@ -65,6 +74,9 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
 
     @Override
     public int getCountForSection(int section) {
+        if(onlyFavoriteUsers)
+            return getFavoriteUsersCount() + 1;
+
         if (usersAsSections) {
             if (section < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
                 ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section));
@@ -79,8 +91,57 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
         return arr.size();
     }
 
+    public View getItemViewForFavoriteUsers(int section, int position, View convertView, ViewGroup parent) {
+        TLRPC.User user = null;
+        int count = 0;
+
+        if (section == 0) {
+            if (position == 0) {
+                if (convertView == null) {
+                    LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = li.inflate(R.layout.contacts_invite_row_layout, parent, false);
+                    TextView textView = (TextView) convertView.findViewById(R.id.messages_list_row_name);
+                    textView.setText(LocaleController.getString("InviteFriends", R.string.InviteFriends));
+                }
+                View divider = convertView.findViewById(R.id.settings_row_divider);
+                if (ContactsController.getInstance().contacts.isEmpty()) {
+                    divider.setVisibility(View.INVISIBLE);
+                } else {
+                    divider.setVisibility(View.VISIBLE);
+                }
+                return convertView;
+            }
+            user = MessagesController.getInstance().getFavoriteUser(position - 1);
+            count = MessagesController.getInstance().getFavoriteUsersCount() + 1;
+        }
+
+        if (user != null) {
+            if (convertView == null) {
+                convertView = new ChatOrUserCell(mContext);
+                ((ChatOrUserCell)convertView).usePadding = false;
+            }
+
+            ((ChatOrUserCell)convertView).setData(user, null, null, null, null);
+
+            if (ignoreUsers != null) {
+                if (ignoreUsers.containsKey(user.id)) {
+                    ((ChatOrUserCell)convertView).drawAlpha = 0.25f;
+                } else {
+                    ((ChatOrUserCell)convertView).drawAlpha = 1.0f;
+                }
+            }
+
+            ((ChatOrUserCell) convertView).useSeparator = position != count - 1;
+
+            return convertView;
+        }
+        return convertView;
+    }
+
     @Override
     public View getItemView(int section, int position, View convertView, ViewGroup parent) {
+        if(onlyFavoriteUsers)
+            return getItemViewForFavoriteUsers(section, position, convertView, parent);
 
         TLRPC.User user = null;
         int count = 0;
@@ -178,6 +239,9 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
 
     @Override
     public int getItemViewTypeCount() {
+        if(onlyFavoriteUsers)
+            return 2;
+
         return 3;
     }
 
@@ -195,6 +259,9 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
 
     @Override
     public int getSectionHeaderViewTypeCount() {
+        if(onlyFavoriteUsers)
+            return 1;
+
         return 2;
     }
 

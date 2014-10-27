@@ -6,4 +6,8 @@
     <color name="settings_background_color">#ffffffff</color>
     <color name="divider">#dcdcdc</color>
     <color name="header">#ff54759e</color>
+
+    <!-- Floating Button -->
+    <color name="primary">#009688</color>
+    <color name="primary_pressed">#26a69a</color>
 </resources>

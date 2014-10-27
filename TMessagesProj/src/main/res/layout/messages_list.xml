@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -64,4 +64,29 @@
             android:layout_height="wrap_content">
         </ProgressBar>
     </LinearLayout>
-</RelativeLayout>
+
+    <org.telegram.ui.FloatingActionButton
+        android:id="@+id/button_floating_action"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_action_content_new"
+        fab_colorNormal="@color/primary"
+        fab_colorPressed="@color/primary_pressed"
+        android:alpha="0.75" />
+
+    <org.telegram.ui.FloatingActionButton
+        android:id="@+id/button_floating_action_favorite"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_favorite_star_global"
+        fab_colorNormal="@color/primary"
+        fab_colorPressed="@color/primary_pressed"
+        android:alpha="0.75"
+        android:layout_gravity="bottom|right" />
+
+</FrameLayout>

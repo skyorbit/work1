@@ -42,6 +42,7 @@ public class ChatOrUserCell extends BaseCell {
     private CharSequence currentName;
     private ImageReceiver avatarImage;
     private CharSequence subLabel;
+    private Drawable favoriteDrawable;
 
     private ChatOrUserCellLayout cellLayout;
     private TLRPC.User user = null;
@@ -105,6 +106,10 @@ public class ChatOrUserCell extends BaseCell {
 
         if (avatarImage == null) {
             avatarImage = new ImageReceiver(this);
+        }
+
+        if(favoriteDrawable == null) {
+            favoriteDrawable = getResources().getDrawable(R.drawable.ic_favorite_star);
         }
 
         if (cellLayout == null) {
@@ -271,8 +276,14 @@ public class ChatOrUserCell extends BaseCell {
             cellLayout.onlineLayout.draw(canvas);
             canvas.restore();
         }
-
-        avatarImage.draw(canvas);
+        if(!MessagesController.getInstance().getUser(user.id).favorite) {
+	    avatarImage.draw(canvas);
+        } else {
+	    avatarImage.draw(canvas);
+            setDrawableBounds(favoriteDrawable, cellLayout.favoriteLeft, cellLayout.favoriteTop);
+            favoriteDrawable.setAlpha(180);
+            favoriteDrawable.draw(canvas);
+        }
     }
 
     private class ChatOrUserCellLayout {
@@ -285,6 +296,8 @@ public class ChatOrUserCell extends BaseCell {
         private boolean drawNameGroup;
         private int nameLockLeft;
         private int nameLockTop;
+        private int favoriteLeft;
+        private int favoriteTop;
 
         private int onlineLeft;
         private int onlineTop = AndroidUtilities.dp(36);
@@ -404,11 +417,14 @@ public class ChatOrUserCell extends BaseCell {
 
             if (!LocaleController.isRTL) {
                 avatarLeft = usePadding ? AndroidUtilities.dp(11) : 0;
+                favoriteLeft = avatarLeft - favoriteDrawable.getIntrinsicWidth()/3;
+                favoriteTop = avatarTop - favoriteDrawable.getIntrinsicHeight()/3;
             } else {
                 avatarLeft = width - AndroidUtilities.dp(50 + (usePadding ? 11 : 0));
+                favoriteLeft = avatarLeft - favoriteDrawable.getIntrinsicWidth()/3;
+                favoriteTop = avatarTop - favoriteDrawable.getIntrinsicHeight()/3;
             }
             avatarImage.setImageCoords(avatarLeft, avatarTop, AndroidUtilities.dp(50), AndroidUtilities.dp(50));
-
 
             double widthpx = 0;
             float left = 0;

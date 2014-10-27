@@ -113,6 +113,8 @@
     <string name="SaveToDownloads">Save to downloads</string>
     <string name="ApplyLocalizationFile">Apply localization file</string>
     <string name="UnsupportedAttachment">Unsupported attachment</string>
+    <string name="AddedFavoriteNotification">Added to favorites</string>
+    <string name="RemovedFavoriteNotification">Removed from favorites</string>
     <!--notification-->
     <string name="EncryptedChatRequested">Secret chat requested</string>
     <string name="EncryptedChatAccepted">Secret chat started</string>
@@ -153,6 +155,8 @@
     <string name="NotificationMessagesPeopleDisplayOrder">%1$s %2$s</string>
     <!--contacts view-->
     <string name="SelectContact">Select Contact</string>
+    <string name="SelectSecretContact">Select Contact(Secure)</string>
+    <string name="FavoriteList">Favorite Friends</string>
     <string name="NoContacts">No contacts yet</string>
     <string name="InviteText">Hey, let\'s switch to Telegram: http://telegram.org/dl2</string>
     <string name="TodayAt">today at</string>

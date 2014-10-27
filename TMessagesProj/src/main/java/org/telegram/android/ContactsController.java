@@ -805,6 +805,8 @@ public class ContactsController {
                 for (TLRPC.TL_contact contact : contactsArr) {
                     TLRPC.User user = MessagesController.getInstance().getUser(contact.user_id);
                     if (user != null) {
+			//Initial user-favorite setting from db
+                        MessagesController.getInstance().setUserToFavorites(user, contact.is_favorite);
                         usersDict.put(user.id, user);
 
 //                        if (BuildVars.DEBUG_VERSION) {
@@ -1413,6 +1415,83 @@ public class ContactsController {
         synchronized (observerLock) {
             ignoreChanges = false;
         }
+    }
+
+    public boolean MarkfavoriteOnDatabase(final TLRPC.User user) {
+        if (user == null || user.phone == null) {
+            return false;
+        }
+
+        if(MessagesController.getInstance().favoriteusers.contains(user.id))
+            return false;
+
+        TLRPC.TL_contact newContact = new TLRPC.TL_contact();
+        newContact.user_id = user.id;
+        newContact.is_favorite = true;
+        ArrayList<TLRPC.TL_contact> arrayList = new ArrayList<TLRPC.TL_contact>();
+        arrayList.add(newContact);
+        MessagesStorage.getInstance().putContacts(arrayList, false);
+        MessagesController.getInstance().setUserToFavorites(user, true);
+
+        if (user.phone != null && user.phone.length() > 0) {
+            MessagesStorage.getInstance().applyPhoneBookUpdates(user.phone, "");
+            Contact contact = contactsBookSPhones.get(user.phone);
+            if (contact != null) {
+                int index = contact.shortPhones.indexOf(user.phone);
+                if (index != -1) {
+                    contact.phoneDeleted.set(index, 0);
+                }
+            }
+        }
+
+        AndroidUtilities.RunOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                 /*   if (contactsDict.get(user.id) == null) {
+                        TLRPC.TL_contact newContact = new TLRPC.TL_contact();
+                        newContact.user_id = user.id;
+                        newContact.is_favorite = true;
+                        contacts.add(newContact);
+                        contactsDict.put(newContact.user_id, newContact);
+                    }
+                buildContactsSectionsArrays(true);
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.contactsDidLoaded);*/
+            }
+        });
+        return true;
+    }
+
+    public boolean UnMarkfavoriteOnDatabase(final TLRPC.User user) {
+        if (user == null || user.phone == null) {
+            return false;
+        }
+
+        if(!MessagesController.getInstance().favoriteusers.contains(user.id))
+            return false;
+
+        TLRPC.TL_contact newContact = new TLRPC.TL_contact();
+        newContact.user_id = user.id;
+        newContact.is_favorite = false;
+        ArrayList<TLRPC.TL_contact> arrayList = new ArrayList<TLRPC.TL_contact>();
+        arrayList.add(newContact);
+        MessagesStorage.getInstance().putContacts(arrayList, false);
+        MessagesController.getInstance().setUserToFavorites(user, false);
+
+        AndroidUtilities.RunOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+              /*  if (contactsDict.get(user.id) == null) {
+                    TLRPC.TL_contact newContact = new TLRPC.TL_contact();
+                    newContact.user_id = user.id;
+                    newContact.is_favorite = true;
+                    contacts.add(newContact);
+                    contactsDict.put(newContact.user_id, newContact);
+                }
+                buildContactsSectionsArrays(true);
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.contactsDidLoaded);*/
+            }
+        });
+        return true;
     }
 
     public void addContact(TLRPC.User user) {

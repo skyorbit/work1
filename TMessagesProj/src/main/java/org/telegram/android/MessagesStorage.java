@@ -96,7 +96,7 @@ public class MessagesStorage {
                 database.executeFast("CREATE TABLE enc_chats(uid INTEGER PRIMARY KEY, user INTEGER, name TEXT, data BLOB, g BLOB, authkey BLOB, ttl INTEGER, layer INTEGER, seq_in INTEGER, seq_out INTEGER)").stepThis().dispose();
                 database.executeFast("CREATE TABLE dialogs(did INTEGER PRIMARY KEY, date INTEGER, unread_count INTEGER, last_mid INTEGER)").stepThis().dispose();
                 database.executeFast("CREATE TABLE chat_settings(uid INTEGER PRIMARY KEY, participants BLOB)").stepThis().dispose();
-                database.executeFast("CREATE TABLE contacts(uid INTEGER PRIMARY KEY, mutual INTEGER)").stepThis().dispose();
+                database.executeFast("CREATE TABLE contacts(uid INTEGER PRIMARY KEY, mutual INTEGER, favorite INTEGER)").stepThis().dispose();
                 database.executeFast("CREATE TABLE pending_read(uid INTEGER PRIMARY KEY, max_id INTEGER)").stepThis().dispose();
                 database.executeFast("CREATE TABLE media(mid INTEGER PRIMARY KEY, uid INTEGER, date INTEGER, data BLOB)").stepThis().dispose();
                 database.executeFast("CREATE TABLE media_counts(uid INTEGER PRIMARY KEY, count INTEGER)").stepThis().dispose();
@@ -266,6 +266,7 @@ public class MessagesStorage {
                     if (version == 4 && version < 6) {
                         database.executeFast("CREATE TABLE IF NOT EXISTS enc_tasks_v2(mid INTEGER PRIMARY KEY, date INTEGER)").stepThis().dispose();
                         database.executeFast("CREATE INDEX IF NOT EXISTS date_idx_enc_tasks_v2 ON enc_tasks_v2(date);").stepThis().dispose();
+			database.executeFast("ALTER TABLE contacts ADD COLUMN favorite INTEGER;").stepThis().dispose();
                         database.beginTransaction();
                         SQLiteCursor cursor = database.queryFinalized("SELECT date, data FROM enc_tasks WHERE 1");
                         SQLitePreparedStatement state = database.executeFast("REPLACE INTO enc_tasks_v2 VALUES(?, ?)");
@@ -1282,11 +1283,12 @@ public class MessagesStorage {
                         database.executeFast("DELETE FROM contacts WHERE 1").stepThis().dispose();
                     }
                     database.beginTransaction();
-                    SQLitePreparedStatement state = database.executeFast("REPLACE INTO contacts VALUES(?, ?)");
+                    SQLitePreparedStatement state = database.executeFast("REPLACE INTO contacts VALUES(?, ?, ?)");
                     for (TLRPC.TL_contact contact : contacts) {
                         state.requery();
                         state.bindInteger(1, contact.user_id);
                         state.bindInteger(2, contact.mutual ? 1 : 0);
+                        state.bindInteger(3, contact.is_favorite ? 1 : 0);
                         state.step();
                     }
                     state.dispose();
@@ -1433,6 +1435,7 @@ public class MessagesStorage {
                         TLRPC.TL_contact contact = new TLRPC.TL_contact();
                         contact.user_id = user_id;
                         contact.mutual = cursor.intValue(1) == 1;
+                        contact.is_favorite = cursor.intValue(2) == 1;
                         if (uids.length() != 0) {
                             uids.append(",");
                         }

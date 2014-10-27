@@ -25,15 +25,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.telegram.android.AndroidUtilities;
-import org.telegram.android.LocaleController;
-import org.telegram.messenger.TLObject;
-import org.telegram.messenger.TLRPC;
 import org.telegram.android.ContactsController;
-import org.telegram.messenger.FileLog;
+import org.telegram.android.LocaleController;
 import org.telegram.android.MessagesController;
 import org.telegram.android.MessagesStorage;
 import org.telegram.android.NotificationCenter;
-import org.telegramS.messenger.R;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.TLObject;
+import org.telegram.messenger.TLRPC;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.Adapters.BaseContactsSearchAdapter;
@@ -44,6 +43,7 @@ import org.telegram.ui.Views.ActionBar.ActionBarMenu;
 import org.telegram.ui.Views.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.Views.ActionBar.BaseFragment;
 import org.telegram.ui.Views.SettingsSectionLayout;
+import org.telegramS.messenger.R;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -51,6 +51,8 @@ import java.util.TimerTask;
 
 public class MessagesActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private ListView messagesListView;
+    //private FloatingActionButton floatingChatButton;
+    private FloatingActionButton floatingChatfromFavoriteButton;
     private MessagesAdapter messagesListViewAdapter;
     private TextView searchEmptyView;
     private View progressView;
@@ -229,8 +231,39 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             messagesListViewAdapter = new MessagesAdapter(getParentActivity());
 
             messagesListView = (ListView)fragmentView.findViewById(R.id.messages_list_view);
-            messagesListView.setAdapter(messagesListViewAdapter);
 
+            /*floatingChatButton = (FloatingActionButton)fragmentView.findViewById(R.id.button_floating_action);
+            floatingChatButton.setVisibility(View.VISIBLE);
+            floatingChatButton.attachToListView(messagesListView);
+            floatingChatButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bundle args = new Bundle();
+                    args.putBoolean("onlyUsers", true);
+                    args.putBoolean("destroyAfterSelect", true);
+                    args.putBoolean("usersAsSections", true);
+                    args.putBoolean("createSecretChat", true);
+                    presentFragment(new ContactsActivity(args));
+                }
+            });*/
+
+            floatingChatfromFavoriteButton = (FloatingActionButton)fragmentView.findViewById(R.id.button_floating_action_favorite);
+            floatingChatfromFavoriteButton.setVisibility(View.VISIBLE);
+            floatingChatfromFavoriteButton.attachToListView(messagesListView);
+            floatingChatfromFavoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view){
+                    Bundle args = new Bundle();
+                    args.putBoolean("onlyUsers", true);
+                    args.putBoolean("onlyFavoriteUsers", true);
+                    args.putBoolean("destroyAfterSelect", true);
+                    args.putBoolean("usersAsSections", false);
+                    args.putBoolean("createSecretChat", false);
+                    presentFragment(new ContactsActivity(args));
+                }
+            });
+
+            messagesListView.setAdapter(messagesListViewAdapter);
             progressView = fragmentView.findViewById(R.id.progressLayout);
             messagesListViewAdapter.notifyDataSetChanged();
             searchEmptyView = (TextView)fragmentView.findViewById(R.id.searchEmptyView);
@@ -430,6 +463,34 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         if (absListView.getLastVisiblePosition() == MessagesController.getInstance().dialogs.size() && !serverOnly || absListView.getLastVisiblePosition() == MessagesController.getInstance().dialogsServerOnly.size() && serverOnly) {
                             MessagesController.getInstance().loadDialogs(MessagesController.getInstance().dialogs.size(), MessagesController.getInstance().dialogsServerOnly.size(), 100, true);
                         }
+                    }
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        /*int floatingChatButtonListViewScrollY = floatingChatButton.getListViewScrollY();
+                        if (floatingChatButtonListViewScrollY == floatingChatButton.mScrollY) {
+                            return;
+                        }
+                        if (floatingChatButtonListViewScrollY > floatingChatButton.mScrollY) {
+                            // Scrolling up
+                            floatingChatButton.hide();
+                        } else if (floatingChatButtonListViewScrollY < floatingChatButton.mScrollY) {
+                            // Scrolling down
+                            floatingChatButton.show();
+                        }
+                        floatingChatButton.mScrollY = floatingChatButtonListViewScrollY;*/
+
+                        int floatingChatfromFavoriteButtonListViewScrollY = floatingChatfromFavoriteButton.getListViewScrollY();
+                        if (floatingChatfromFavoriteButtonListViewScrollY == floatingChatfromFavoriteButton.mScrollY) {
+                            return;
+                        }
+                        if (floatingChatfromFavoriteButtonListViewScrollY > floatingChatfromFavoriteButton.mScrollY) {
+                            // Scrolling up
+                            floatingChatfromFavoriteButton.hide();
+                        } else if (floatingChatfromFavoriteButtonListViewScrollY < floatingChatfromFavoriteButton.mScrollY) {
+                            // Scrolling down
+                            floatingChatfromFavoriteButton.show();
+                        }
+                        floatingChatfromFavoriteButton.mScrollY = floatingChatfromFavoriteButtonListViewScrollY;
                     }
                 }
             });

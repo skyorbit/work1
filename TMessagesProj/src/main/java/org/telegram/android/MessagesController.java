@@ -47,6 +47,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     private ConcurrentHashMap<Integer, TLRPC.Chat> chats = new ConcurrentHashMap<Integer, TLRPC.Chat>(100, 1.0f, 2);
     private ConcurrentHashMap<Integer, TLRPC.EncryptedChat> encryptedChats = new ConcurrentHashMap<Integer, TLRPC.EncryptedChat>(10, 1.0f, 2);
     private ConcurrentHashMap<Integer, TLRPC.User> users = new ConcurrentHashMap<Integer, TLRPC.User>(100, 1.0f, 2);
+    public ArrayList<Integer> favoriteusers = new ArrayList<Integer>();
 
     public ArrayList<TLRPC.TL_dialog> dialogs = new ArrayList<TLRPC.TL_dialog>();
     public ArrayList<TLRPC.TL_dialog> dialogsServerOnly = new ArrayList<TLRPC.TL_dialog>();
@@ -383,6 +384,33 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         return chat;
     }
 
+    public void setUserToFavorites(TLRPC.User user, boolean v) {
+        if(user == null) {
+            return;
+        }
+        users.get(user.id).favorite = v;
+
+        if(v == true && !favoriteusers.contains(user.id)) {
+            favoriteusers.add(user.id);
+        }
+        else if (v == false && favoriteusers.contains(user.id)){
+            //favoriteusers.remove(user.id);
+            favoriteusers.remove((Integer)user.id);
+        }
+    }
+
+    public int getFavoriteUsersCount() {
+        return favoriteusers.size();
+    }
+
+    public TLRPC.User getFavoriteUser(int index) {
+        if(index > -1 && favoriteusers.size() > 0) {
+            //return favoriteusers.get(index); //pointer addresses can be massed up in the middle of array operation. need to use id(is unique)
+            return users.get(favoriteusers.get(index));
+        }
+        return null;
+    }
+
     public boolean putUser(TLRPC.User user, boolean fromCache) {
         if (user == null) {
             return false;
@@ -390,6 +418,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         fromCache = fromCache && user.id / 1000 != 333;
         TLRPC.User oldUser = users.get(user.id);
         if (!fromCache) {
+            if(oldUser != null)
+                user.favorite = oldUser.favorite;
             users.put(user.id, user);
             if (user.id == UserConfig.getClientUserId()) {
                 UserConfig.setCurrentUser(user);

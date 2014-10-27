@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.LocaleController;
@@ -62,6 +63,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
     private boolean searchWas;
     private boolean searching;
     private boolean onlyUsers;
+    private boolean onlyFavoriteUsers;
     private boolean usersAsSections;
     private boolean destroyAfterSelect;
     private boolean returnAsResult;
@@ -97,6 +99,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             usersAsSections = arguments.getBoolean("usersAsSections", false);
             returnAsResult = arguments.getBoolean("returnAsResult", false);
             createSecretChat = arguments.getBoolean("createSecretChat", false);
+            onlyFavoriteUsers = arguments.getBoolean("onlyFavoriteUsers", false);
             selectAlertString = arguments.getString("selectAlertString");
             allowUsernameSearch = arguments.getBoolean("allowUsernameSearch", true);
         }
@@ -141,7 +144,13 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         if (fragmentView == null) {
             actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
             actionBarLayer.setBackOverlay(R.layout.updating_state_layout);
-            if (destroyAfterSelect) {
+            if(onlyFavoriteUsers) {
+                actionBarLayer.setTitle(LocaleController.getString("FavoriteList", R.string.FavoriteList));
+            }else if(createSecretChat){
+                actionBarLayer.setDisplayUseLogoEnabled(true, R.drawable.ic_lock_white);
+                actionBarLayer.setTitle(LocaleController.getString("SelectSecretContact", R.string.SelectSecretContact));
+            }else if (destroyAfterSelect) {
+                actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
                 actionBarLayer.setTitle(LocaleController.getString("SelectContact", R.string.SelectContact));
             } else {
                 String sAllContactCnt = " " + ContactsController.getInstance().contacts.size();
@@ -231,8 +240,68 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             });
             listView.setVerticalScrollBarEnabled(false);
 
-            listViewAdapter = new ContactsActivityAdapter(getParentActivity(), onlyUsers, usersAsSections, ignoreUsers);
+            listViewAdapter = new ContactsActivityAdapter(getParentActivity(), onlyUsers, usersAsSections, ignoreUsers, onlyFavoriteUsers);
             listView.setAdapter(listViewAdapter);
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    TLRPC.User user = null;
+                    if (searching && searchWas) {
+                        user = searchListViewAdapter.getItem(i);
+                        if (user == null || user.id == UserConfig.getClientUserId()) {
+                            return true;
+                        }
+                    } else {
+                        int section = listViewAdapter.getSectionForPosition(i);
+                        int row = listViewAdapter.getPositionInSectionForPosition(i);
+                        if (row < 0 || section < 0) {
+                            return true;
+                        }
+                        if (usersAsSections) {
+                            if (section < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
+                                ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section));
+                                if (row < arr.size()) {
+                                    TLRPC.TL_contact contact = arr.get(row);
+                                    user = MessagesController.getInstance().getUser(contact.user_id);
+                                } else {
+                                    return true;
+                                }
+                            }
+                        } else {
+                            if (section == 0) {
+                                if (row == 0) {
+                                    return true;
+                                } else {
+                                    user = getUserWithRowNumByContext(row - 1);
+                                    if(user == null)
+                                        return true;
+                                }
+                            }
+                        }
+
+                        if (user != null) {
+                            if (user.id == UserConfig.getClientUserId()) {
+                                return true;
+                            }
+                            if(!MessagesController.getInstance().getUser(user.id).favorite) {
+                                if(ContactsController.getInstance().MarkfavoriteOnDatabase(user)) {
+                                    Toast toast = Toast.makeText(getParentActivity(), LocaleController.getString("AddedFavoriteNotification", R.string.AddedFavoriteNotification), Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            } else {
+                                if(ContactsController.getInstance().UnMarkfavoriteOnDatabase(user)) {
+                                    Toast toast = Toast.makeText(getParentActivity(), LocaleController.getString("RemovedFavoriteNotification", R.string.RemovedFavoriteNotification), Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            }
+                            updateVisibleRows(0);
+                            listViewAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    return true;
+                }
+            });
+
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -292,11 +361,9 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                     }
                                     return;
                                 } else {
-                                    if (row - 1 < ContactsController.getInstance().contacts.size()) {
-                                        user = MessagesController.getInstance().getUser(ContactsController.getInstance().contacts.get(row - 1).user_id);
-                                    } else {
+                                    user = getUserWithRowNumByContext(row - 1);
+                                    if(user == null)
                                         return;
-                                    }
                                 }
                             }
                         }
@@ -372,6 +439,19 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             }
         }
         return fragmentView;
+    }
+
+    private TLRPC.User getUserWithRowNumByContext(int row) {
+        if(onlyFavoriteUsers) {
+            if (row < MessagesController.getInstance().getFavoriteUsersCount()) {
+                return MessagesController.getInstance().getFavoriteUser(row);
+            }
+        } else {
+            if (row < ContactsController.getInstance().contacts.size()) {
+                return MessagesController.getInstance().getUser(ContactsController.getInstance().contacts.get(row).user_id);
+            }
+        }
+        return null;
     }
 
     private void didSelectResult(final TLRPC.User user, boolean useAlert, String param) {
