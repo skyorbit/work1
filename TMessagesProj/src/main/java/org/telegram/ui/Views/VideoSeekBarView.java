@@ -17,7 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.telegram.android.AndroidUtilities;
-import org.telegram.messenger.R;
+import org.telegramS.messenger.R;
 
 public class VideoSeekBarView extends View {
 
