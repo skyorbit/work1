@@ -92,7 +92,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     private String uploadingAvatar = null;
 
     public boolean enableJoined = true;
-    public int fontSize = AndroidUtilities.dp(16);
+    public int fontSize = AndroidUtilities.dp(14);
     public int maxGroupCount = 200;
     public int maxBroadcastCount = 100;
 

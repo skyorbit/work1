@@ -62,6 +62,8 @@ public class DialogCell extends BaseCell {
 
     public boolean useSeparator = false;
 
+    public int globalFontSize = AndroidUtilities.dp(14);
+
     private void init() {
         if (namePaint == null) {
             namePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
@@ -187,9 +189,47 @@ public class DialogCell extends BaseCell {
             super.onLayout(changed, left, top, right, bottom);
             return;
         }
-        if (changed) {
+
+        if (applyFontSize() || changed) {
             buildLayout();
         }
+    }
+
+    private boolean applyFontSize() {
+        int old_globalFontSize = globalFontSize;
+        globalFontSize = AndroidUtilities.dp(MessagesController.getInstance().fontSize);
+        if(old_globalFontSize != globalFontSize) {
+            //skyorbit: Dialogcell's font size upper limit
+            if (MessagesController.getInstance().fontSize > 23)
+                globalFontSize = AndroidUtilities.dp(22);
+
+            if (namePaint != null) {
+                namePaint.setTextSize(globalFontSize * 19 / 16);
+            }
+
+            if (nameEncryptedPaint != null) {
+                nameEncryptedPaint.setTextSize(globalFontSize * 19 / 16);
+            }
+
+            if (nameUnknownPaint != null) {
+                nameUnknownPaint.setTextSize(globalFontSize * 19 / 16);
+            }
+
+            if (messagePaint != null) {
+                messagePaint.setTextSize(globalFontSize);
+            }
+
+            if (messagePrintingPaint != null) {
+                messagePrintingPaint.setTextSize(globalFontSize);
+            }
+
+            if (timePaint != null) {
+                timePaint.setTextSize(globalFontSize);
+            }
+
+            return true;
+        }
+        return false;
     }
 
     public void buildLayout() {
