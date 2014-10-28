@@ -527,7 +527,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                 textView.setTypeface(typeface);
 
                 textView.setText(ContactsController.formatName(user.first_name, user.last_name));
-                onlineText.setText(LocaleController.formatUserStatus(user));
+                //onlineText.setText(LocaleController.formatUserStatus(user));
 
                 TLRPC.FileLocation photo = null;
                 TLRPC.FileLocation photoBig = null;

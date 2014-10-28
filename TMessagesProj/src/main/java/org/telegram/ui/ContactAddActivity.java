@@ -158,7 +158,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
             return;
         }
         phoneText.setText(PhoneFormat.getInstance().format("+" + user.phone));
-        onlineText.setText(LocaleController.formatUserStatus(user));
+        //onlineText.setText(LocaleController.formatUserStatus(user));
 
         TLRPC.FileLocation photo = null;
         if (user.photo != null) {

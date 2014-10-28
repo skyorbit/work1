@@ -29,21 +29,19 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.ContactsController;
-import org.telegram.android.LocaleController;
 import org.telegram.android.MediaController;
+import org.telegram.android.MessageObject;
 import org.telegram.android.MessagesController;
-import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.android.NotificationCenter;
 import org.telegram.android.NotificationsController;
+import org.telegram.android.PhotoObject;
 import org.telegram.messenger.ConnectionsManager;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
-import org.telegram.android.NotificationCenter;
-import org.telegramS.messenger.R;
 import org.telegram.messenger.TLRPC;
-import org.telegram.android.MessageObject;
-import org.telegram.android.PhotoObject;
 import org.telegram.ui.Views.ActionBar.ActionBar;
 import org.telegram.ui.Views.ActionBar.ActionBarLayer;
 import org.telegram.ui.Views.ActionBar.ActionBarMenu;
@@ -52,6 +50,7 @@ import org.telegram.ui.Views.ChatActivityEnterView;
 import org.telegram.ui.Views.FrameLayoutFixed;
 import org.telegram.ui.Views.PopupAudioView;
 import org.telegram.ui.Views.TypingDotsDrawable;
+import org.telegramS.messenger.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -781,7 +780,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
             if (user != null) {
                 currentUser = user;
             }
-            actionBarLayer.setSubtitle(LocaleController.formatUserStatus(currentUser));
+            //actionBarLayer.setSubtitle(LocaleController.formatUserStatus(currentUser));
         } else {
             lastPrintString = printString;
             actionBarLayer.setSubtitle(printString);

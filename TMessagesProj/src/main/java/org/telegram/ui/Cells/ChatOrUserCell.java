@@ -17,16 +17,14 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 
-import org.telegram.android.AndroidUtilities;
 import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.android.AndroidUtilities;
 import org.telegram.android.ContactsController;
-import org.telegram.android.LocaleController;
-import org.telegram.messenger.TLRPC;
-import org.telegram.messenger.ConnectionsManager;
-import org.telegram.android.MessagesController;
-import org.telegramS.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.android.ImageReceiver;
+import org.telegram.android.LocaleController;
+import org.telegram.android.MessagesController;
+import org.telegram.messenger.TLRPC;
+import org.telegramS.messenger.R;
 
 public class ChatOrUserCell extends BaseCell {
     private static TextPaint namePaint;
@@ -400,11 +398,11 @@ public class ChatOrUserCell extends BaseCell {
                 if (subLabel != null) {
                     onlineString = subLabel;
                 } else {
-                    onlineString = LocaleController.formatUserStatus(user);
+                    /*onlineString = LocaleController.formatUserStatus(user);
                     if (user != null && (user.id == UserConfig.getClientUserId() || user.status != null && user.status.expires > ConnectionsManager.getInstance().getCurrentTime())) {
                         currentOnlinePaint = onlinePaint;
                         onlineString = LocaleController.getString("Online", R.string.Online);
-                    }
+                    }*/
                 }
 
                 CharSequence onlineStringFinal = TextUtils.ellipsize(onlineString, currentOnlinePaint, nameWidth - AndroidUtilities.dp(12), TextUtils.TruncateAt.END);
