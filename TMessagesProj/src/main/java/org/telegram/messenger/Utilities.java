@@ -716,7 +716,7 @@ public class Utilities {
         }
         try {
             UpdateChecker checker = new UpdateChecker(context);
-            checker.setNoticeIcon(R.drawable.ic_launcher);
+            checker.setNoticeIcon(R.drawable.ic_launcher_);
             checker.setNotice(Notice.NOTIFICATION);
             checker.start();
         }catch(Exception e){
