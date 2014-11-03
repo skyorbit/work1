@@ -22,6 +22,7 @@ dependencies {
     compile 'net.hockeyapp.android:HockeySDK:3.0.2'
     compile 'com.googlecode.mp4parser:isoparser:1.0.+'
     compile project(':library-updatechecker')
+    compile project(':Android-PasscodeLock:library')
 }
 
 android {

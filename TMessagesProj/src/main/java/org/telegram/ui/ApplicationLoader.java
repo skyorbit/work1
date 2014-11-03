@@ -30,18 +30,19 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.ContactsController;
+import org.telegram.android.LocaleController;
 import org.telegram.android.MediaController;
+import org.telegram.android.MessagesController;
+import org.telegram.android.NativeLoader;
 import org.telegram.android.NotificationsService;
+import org.telegram.android.ScreenReceiver;
 import org.telegram.android.SendMessagesHelper;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ConnectionsManager;
 import org.telegram.messenger.FileLog;
-import org.telegram.android.LocaleController;
-import org.telegram.android.MessagesController;
-import org.telegram.android.NativeLoader;
-import org.telegram.android.ScreenReceiver;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
+import org.wordpress.passcodelock.AppLockManager;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -121,6 +122,8 @@ public class ApplicationLoader extends Application {
         java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
 
         startPushService();
+
+        AppLockManager.getInstance().enableDefaultAppLockIfAvailable(this);
     }
 
     public static void startPushService() {

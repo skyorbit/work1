@@ -34,33 +34,33 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.ContactsController;
-import org.telegram.PhoneFormat.PhoneFormat;
-import org.telegram.android.MediaController;
-import org.telegram.messenger.BuildVars;
 import org.telegram.android.LocaleController;
+import org.telegram.android.MediaController;
+import org.telegram.android.MessageObject;
+import org.telegram.android.MessagesController;
+import org.telegram.android.MessagesStorage;
+import org.telegram.android.NotificationCenter;
+import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.ConnectionsManager;
 import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.RPCRequest;
 import org.telegram.messenger.SerializedData;
 import org.telegram.messenger.TLClassStore;
 import org.telegram.messenger.TLObject;
 import org.telegram.messenger.TLRPC;
-import org.telegram.messenger.ConnectionsManager;
-import org.telegram.messenger.FileLog;
-import org.telegram.android.MessagesController;
-import org.telegram.android.MessagesStorage;
-import org.telegram.android.NotificationCenter;
-import org.telegramS.messenger.R;
-import org.telegram.messenger.RPCRequest;
 import org.telegram.messenger.UserConfig;
-import org.telegram.android.MessageObject;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
 import org.telegram.ui.Views.ActionBar.ActionBarLayer;
+import org.telegram.ui.Views.ActionBar.BaseFragment;
 import org.telegram.ui.Views.AvatarUpdater;
 import org.telegram.ui.Views.BackupImageView;
-import org.telegram.ui.Views.ActionBar.BaseFragment;
 import org.telegram.ui.Views.NumberPicker;
 import org.telegram.ui.Views.SettingsSectionLayout;
+import org.telegramS.messenger.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -80,6 +80,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int enableAnimationsRow;
     private int notificationRow;
     private int blockedRow;
+    private int passcodeRow;
     private int backgroundRow;
     private int supportSectionRow;
     private int askQuestionRow;
@@ -187,6 +188,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         languageRow = rowCount++;
         notificationRow = rowCount++;
         blockedRow = rowCount++;
+        passcodeRow = rowCount++;
         backgroundRow = rowCount++;
         terminateSessionsRow = rowCount++;
         mediaDownloadSection = rowCount++;
@@ -485,6 +487,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         showAlertDialog(builder);
                     } else if (i == usernameRow) {
                         presentFragment(new SettingsChangeUsernameActivity());
+                    } else if (i == passcodeRow) {
+                        Intent intent = new Intent("org.wordpress.passcodelock.intent.action.Launch");
+                        startActivityForResult(intent, 0);
                     }
                 }
             });
@@ -715,7 +720,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
         @Override
         public boolean isEnabled(int i) {
-            return i == textSizeRow || i == enableAnimationsRow || i == blockedRow || i == notificationRow || i == backgroundRow ||
+            return i == passcodeRow || i == textSizeRow || i == enableAnimationsRow || i == blockedRow || i == notificationRow || i == backgroundRow ||
                     i == askQuestionRow || i == sendLogsRow || i == sendByEnterRow || i == terminateSessionsRow || i == wifiDownloadRow ||
                     i == mobileDownloadRow || i == clearLogsRow || i == roamingDownloadRow || i == languageRow || i == usernameRow ||
                     i == switchBackendButtonRow || i == telegramFaqRow || i == contactsSortRow || i == contactsReimportRow || i == saveToGalleryRow;
@@ -884,6 +889,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 } else if (i == contactsReimportRow) {
                     textView.setText(LocaleController.getString("ImportContacts", R.string.ImportContacts));
                     divider.setVisibility(View.INVISIBLE);
+                } else if (i == passcodeRow) {
+                    textView.setText(LocaleController.getString("Passcode Lock", R.string.PasscodeLock));
+                    divider.setVisibility(passcodeRow != 0 ? View.VISIBLE : View.INVISIBLE);
                 }
             } else if (type == 3) {
                 if (view == null) {

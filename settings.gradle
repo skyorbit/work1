@@ -1,2 +1,3 @@
 include ':TMessagesProj'
 include ':library-updatechecker'
+include ':Android-PasscodeLock:library'

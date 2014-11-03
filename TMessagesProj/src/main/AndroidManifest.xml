@@ -110,6 +110,27 @@
             android:theme="@style/Theme.TMessages.PopupNotification">
         </activity>
 
+	<activity
+	    android:name="org.wordpress.passcodelock.PasscodeUnlockActivity"
+	    android:screenOrientation="portrait"
+	    android:windowSoftInputMode="stateHidden" >
+	</activity>
+	<activity
+	    android:name="org.wordpress.passcodelock.PasscodePreferencesActivity"
+	    android:configChanges="orientation|keyboardHidden|screenSize"
+	    android:screenOrientation="portrait"
+	    android:windowSoftInputMode="stateHidden" >
+        <intent-filter>
+            <action android:name="org.wordpress.passcodelock.intent.action.Launch" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+	</activity>
+	<activity
+	    android:name="org.wordpress.passcodelock.PasscodeManagePasswordActivity"
+	    android:screenOrientation="portrait"
+	    android:windowSoftInputMode="stateHidden" >
+	</activity>
+
         <receiver android:name="org.telegram.android.SmsListener">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
